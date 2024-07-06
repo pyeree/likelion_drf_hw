@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Singer, Song, Tag
+from .models import Singer, Song, Tag, Image
 
 class SongSerializer(serializers.ModelSerializer):
 
@@ -9,10 +9,22 @@ class SongSerializer(serializers.ModelSerializer):
         read_only_fields = ['singer']
 
 
+class ImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Image
+        fields = '__all__'
+        read_only_fields =['singer']
+
 class SingerSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only =True)
     
     songs = serializers.SerializerMethodField(read_only=True)
+    images = serializers.SerializerMethodField(read_only=True)
+
+    def get_images(self, instance):
+        serializers = ImageSerializer(instance.images,many=True)
+        return serializers.data
 
     def get_songs(self, instance):
         serializers = SongSerializer(instance.songs,many =True)

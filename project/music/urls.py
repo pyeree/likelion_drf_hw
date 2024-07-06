@@ -10,4 +10,6 @@ urlpatterns = [
     path('<int:singer_id>/song',views.song_list_create),
     path('<int:singer_id>/song/<int:song_id>',views.song_detail_update_delete),
     path('tags/<str:tag_name>', views.find_tag),
+    path('<int:singer_id>/image',views.Image_read_create),
+    path('image/<int:image_id>',views.Image_detail_update_delete)
 ] +static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

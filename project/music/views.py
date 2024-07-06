@@ -1,8 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import Singer, Song, Tag
-from .serializers import SongSerializer, SingerSerializer
+from .models import Singer, Song, Tag ,Image
+from .serializers import SongSerializer, SingerSerializer, ImageSerializer
 from django.shortcuts import get_object_or_404
+
+
 
 @api_view(['GET', 'POST'])
 def song_list_create(request, singer_id):
@@ -105,3 +107,37 @@ def find_tag(request, tag_name):
         singer = Singer.objects.filter(tag__in = [tag])
         serializer = SingerSerializer(singer, many = True)
         return Response(data = serializer.data)
+
+@api_view(['GET', 'POST'])
+def Image_read_create(request, singer_id):
+    singer = get_object_or_404(Singer, id= singer_id)
+
+    if request.method =='GET':
+        images= Image.objects.filter(singer=singer)
+        serializer = ImageSerializer(images, many=True)
+        return Response(data = serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = ImageSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save(singer=singer)
+        return Response(serializer.data)
+    
+
+@api_view(['GET', 'PATCH', 'DELETE'])
+def Image_detail_update_delete(request, image_id):
+    image = get_object_or_404(Image, id=image_id)
+
+    if request.method == 'GET':
+        serializer = ImageSerializer(image)
+        return Response(serializer.data)
+
+    elif request.method == 'PATCH':
+        serializer = ImageSerializer(instance=image, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        image.delete()
+        return Response({'deleted_image': image_id})
